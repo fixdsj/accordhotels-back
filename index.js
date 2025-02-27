@@ -1,17 +1,21 @@
 import express from "express";
+import { getDbConnection } from "./config/db.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 
 const app = express();
-
-const port = process.env.PORT || 3000;
-
+const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-        res.send("Bienvenue sur l'API de AccordsHotels !");
-    }
-);
+    res.send("Bienvenue sur l'API de AccordsHotels !");
+});
 
-app.listen(port, () => {
-        console.log(`Serveur démarré sur le port ${port}`);
-    }
-);
+async function initApp() {
+    await getDbConnection();
+    app.listen(PORT, () => {
+        console.log(`Serveur démarré sur le port ${PORT}`);
+    });
+}
+
+initApp();
