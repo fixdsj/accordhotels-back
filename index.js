@@ -26,3 +26,4 @@ async function initApp() {
 }
 
 initApp();
+export { app };
