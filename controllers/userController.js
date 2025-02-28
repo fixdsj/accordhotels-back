@@ -29,7 +29,8 @@ export async function createUser(req, res) {
             [email, pseudo, hashedPassword, role]
         );
         const userId = result.insertId;
-        const token = jwt.sign({userId}, process.env.JWT_SECRET, {expiresIn: "1h"});
+        //Stockage de l'ID et du role de l'utilisateur dans le token
+        const token = jwt.sign({userId: userId, role: role}, process.env.JWT_SECRET, {expiresIn: "1h"});
         res.status(201).json({
             message: "User created successfully.",
             userId,
@@ -46,7 +47,7 @@ export async function login(req, res) {
     const {email, password} = req.body;
     try {
         const pool = await getDbConnection();
-        const [result] = await pool.query("SELECT * FROM user WHERE email = ?", [email]);
+        const [result] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
         if (result.length === 0) {
             return res.status(401).json({error: "Email ou mot de passe incorrect."});
         }
