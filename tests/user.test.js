@@ -5,7 +5,7 @@ import {getDbConnection} from '../config/db.js';
 
 before(async () => {
     const pool = await getDbConnection();
-    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM users WHERE email = "test@example.com"');
 })
 it('should create a new user', (done) => {
     request(app)

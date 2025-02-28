@@ -3,13 +3,15 @@ import {getDbConnection} from "./config/db.js";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
 import hotelRouter from "./routes/hotelRouter.js";
+import cors from "cors";
+
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
+app.use(cors());
 // Middleware pour parser le JSON
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
