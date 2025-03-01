@@ -23,7 +23,7 @@ export async function createHotel(req, res) {
     }
 }
 
-export async function searchAll(req, res) {
+export async function search(req, res) {
     let {id, term, location, checkIn, checkOut, rating, price, amenities, limit = 10} = req.query;
     try {
         const pool = await getDbConnection();
@@ -80,5 +80,80 @@ export async function searchAll(req, res) {
     } catch (err) {
         console.error("Database error:", err);
         return res.status(500).json({error: err});
+    }
+}
+
+export async function updateHotel(req, res) {
+    const {id} = req.params;
+    const {name, location, rating, price, description, picture, amenities} = req.body;
+    /*const {error} = hotelSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({error: error.details[0].message});
+    }*/
+    const pool = await getDbConnection();
+    try {
+        const updates = [];
+        const values = [];
+
+        if (name !== undefined) {
+            updates.push("name = ?");
+            values.push(name);
+        }
+        if (location !== undefined) {
+            updates.push("location = ?");
+            values.push(location);
+        }
+        if (rating !== undefined) {
+            updates.push("rating = ?");
+            values.push(rating);
+        }
+        if (price !== undefined) {
+            updates.push("price = ?");
+            values.push(price);
+        }
+        if (description !== undefined) {
+            updates.push("description = ?");
+            values.push(description);
+        }
+        if (picture !== undefined) {
+            updates.push("picture = ?");
+            values.push(picture);
+        }
+        if (amenities !== undefined) {
+            updates.push("amenities = ?");
+            values.push(JSON.stringify(amenities));
+        }
+
+        values.push(id);
+
+        const query = `UPDATE hotels
+                       SET ${updates.join(", ")}
+                       WHERE id = ?`;
+        const [result] = await pool.query(query, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Hotel not found."});
+        }
+        res.status(200).json({message: "Hotel updated successfully."});
+        pool.close();
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({error: err});
+    }
+}
+
+export async function deleteHotel(req, res) {
+    const {id} = req.params;
+    const pool = await getDbConnection();
+    try {
+        const [result] = await pool.query("DELETE FROM hotels WHERE id = ?", [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Hotel not found."});
+        }
+        res.status(200).json({message: "Hotel deleted successfully."});
+        pool.close();
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({error: err});
     }
 }
