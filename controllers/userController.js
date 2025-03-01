@@ -78,17 +78,24 @@ export async function login(req, res) {
     }
 }
 
-export async function readAll(req, res) {
-    // Vérifier dans le token si l'utilisateur a le rôle employee
-    const {role} = req.user;
-    if (role !== "employee") {
-        return res.status(403).json({error: "Non autorisé."});
+export async function search(req, res) {
+
+    const {pseudo, email} = req.query;
+    let query = "SELECT * FROM users WHERE 1=1";
+    const params = [];
+    // Recherche de l'utilisateur par email ou pseudo
+
+    if (pseudo) {
+        query += " AND pseudo LIKE ?";
+        params.push(`%${pseudo}%`);
     }
-    const {email} = req.query;
-    // Recherche de l'utilisateur par email
+    if (email) {
+        query += " AND email LIKE ?";
+        params.push(`%${email}%`);
+    }
     try {
         const pool = await getDbConnection();
-        const [result] = await pool.query("SELECT userId, email, pseudo, role FROM users WHERE email = ?", [email]);
+        const [result] = await pool.query(query, params);
         res.status(200).json(result);
         pool.close();
     } catch (err) {
@@ -97,3 +104,57 @@ export async function readAll(req, res) {
     }
 }
 
+export async function updateUser(req, res) {
+    const {id} = req.params;
+    const {pseudo, email, role} = req.body;
+    const pool = await getDbConnection();
+    try {
+        const updates = [];
+        const values = [];
+
+        if (pseudo !== undefined) {
+            updates.push("pseudo = ?");
+            values.push(pseudo);
+        }
+        if (email !== undefined) {
+            updates.push("email = ?");
+            values.push(email);
+        }
+        if (role !== undefined) {
+            updates.push("role = ?");
+            values.push(role);
+        }
+
+        values.push(id);
+
+        const query = `UPDATE users
+                       SET ${updates.join(", ")}
+                       WHERE id = ?`;
+        const [result] = await pool.query(query, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Utilisateur non trouvé."});
+        }
+        res.status(200).json({message: "Utilisateur mis à jour avec succès."});
+        pool.close();
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({error: err});
+    }
+}
+
+export async function deleteUser(req, res) {
+    const {id} = req.params;
+    const pool = await getDbConnection();
+    try {
+        const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Utilisateur non trouvé."});
+        }
+        res.status(200).json({message: "Utilisateur supprimé avec succès."});
+        pool.close();
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({error: err});
+    }
+}
