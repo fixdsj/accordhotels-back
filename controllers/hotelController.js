@@ -97,11 +97,7 @@ export async function search(req, res) {
 
 export async function updateHotel(req, res) {
     const {id} = req.params;
-    const {name, location, rating, priceRange, description, picture, amenities} = req.body;
-    /*const {error} = hotelSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({error: error.details[0].message});
-    }*/
+    const {name, location, rating, price, description, picture, amenities, priceRange} = req.body;
     const pool = await getDbConnection();
     try {
         const updates = [];
@@ -119,13 +115,17 @@ export async function updateHotel(req, res) {
             updates.push("rating = ?");
             values.push(rating);
         }
-        if (!priceRange) {
+        if (price !== undefined) {
+            updates.push("price = ?");
+            values.push(price);
+        }
+        if (priceRange) {
             if (priceRange.min !== undefined) {
-                updates.push("price <= ?");
+                updates.push("price >= ?");
                 values.push(priceRange.min);
             }
             if (priceRange.max !== undefined) {
-                updates.push("price >= ?");
+                updates.push("price <= ?");
                 values.push(priceRange.max);
             }
         }
@@ -139,7 +139,7 @@ export async function updateHotel(req, res) {
         }
         if (amenities !== undefined) {
             updates.push("amenities = ?");
-            values.push(JSON.stringify(amenities));
+            values.push(amenities.join(","));
         }
 
         values.push(id);
@@ -159,6 +159,7 @@ export async function updateHotel(req, res) {
         res.status(500).json({error: err});
     }
 }
+
 
 export async function deleteHotel(req, res) {
     const {id} = req.params;
