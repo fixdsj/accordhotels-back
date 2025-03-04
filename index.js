@@ -3,6 +3,7 @@ import {getDbConnection} from "./config/db.js";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
 import hotelRouter from "./routes/hotelRouter.js";
+import reservationRouter from "./routes/reservationRouter.js";
 import cors from "cors";
 
 
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/users", userRouter);
 app.use("/api/hotels", hotelRouter);
+app.use("/api/reservations", reservationRouter);
 
 async function initApp() {
     await getDbConnection();
