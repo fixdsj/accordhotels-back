@@ -33,7 +33,7 @@ export async function createUser(req, res) {
         const userId = result.insertId;
 
         // Stockage de l'ID et du rôle de l'utilisateur dans le token
-        const token = jwt.sign({userId: userId, role: role}, process.env.JWT_SECRET, {expiresIn: "1h"});
+        const token = jwt.sign({userId: userId, role: role}, process.env.JWT_SECRET, {expiresIn: "1d"});
 
         // Renvoyer le token et les informations de l'utilisateur
         res.status(201).json({
@@ -64,7 +64,7 @@ export async function login(req, res) {
         }
 
         // Stockage de l'ID et du rôle de l'utilisateur dans le token
-        const token = jwt.sign({userId: user.userId, role: user.role}, process.env.JWT_SECRET, {expiresIn: "1h"});
+        const token = jwt.sign({userId: user.userId, role: user.role}, process.env.JWT_SECRET, {expiresIn: "1d"});
 
         // Renvoyer le token et les informations de l'utilisateur
         res.status(200).json({

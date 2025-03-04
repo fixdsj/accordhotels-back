@@ -5,12 +5,20 @@ export async function createHotel(req, res) {
     const {name, location, rating, price, description, picture, amenities} = req.body;
     const {error} = hotelSchema.validate(req.body);
     if (error) {
+        console.log(error);
         return res.status(400).json({error: error.details[0].message});
     }
     try {
         const pool = await getDbConnection();
-        const [result] = await pool.query("INSERT INTO hotels (name, location, rating, price, description, picture, amenities) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [name, location, rating, price, description, picture, JSON.stringify(amenities)]);
+
+        // Vérifier que les amenities sont un tableau et les convertir en une chaîne de texte
+        const amenitiesString = Array.isArray(amenities) ? amenities.join(",") : "";
+
+        const [result] = await pool.query(
+            "INSERT INTO hotels (name, location, rating, price, description, picture, amenities) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [name, location, rating, price, description, picture, amenitiesString]
+        );
+
         const hotelId = result.insertId;
         res.status(201).json({
             message: "Hotel created successfully.",
@@ -23,8 +31,9 @@ export async function createHotel(req, res) {
     }
 }
 
+
 export async function search(req, res) {
-    let {id, term, location, checkIn, checkOut, rating, price, amenities, limit = 10} = req.query;
+    let {id, term, destination, checkIn, checkOut, rating, price, amenities, limit = 10} = req.query;
     try {
         const pool = await getDbConnection();
         // Initialisation de la requête SQL avec "WHERE 1=1"
@@ -42,9 +51,9 @@ export async function search(req, res) {
             query += " AND name LIKE ?";
             params.push(`%${term}%`);
         }
-        if (location) {
+        if (destination) {
             query += " AND location LIKE ?";
-            params.push(`%${location}%`);
+            params.push(`%${destination}%`);
         }
         if (rating) {
             query += " AND rating LIKE ?";
@@ -54,14 +63,17 @@ export async function search(req, res) {
             query += " AND price <= ?";
             params.push(price);
         }
-        if (term) {
-            query += " AND description LIKE ?";
-            params.push(`%${term}%`);
-        }
         if (amenities) {
-            query += " AND amenities LIKE ?";
-            params.push(`%${JSON.stringify(amenities)}%`);
+            // Convertir les amenities en tableau
+            const amenitiesArray = Array.isArray(amenities) ? amenities : JSON.parse(amenities);
+
+            if (amenitiesArray.length > 0) {
+                // Vérifier que TOUTES les amenities demandées sont dans la colonne
+                query += " AND " + amenitiesArray.map(() => "FIND_IN_SET(?, amenities)").join(" AND ");
+                params.push(...amenitiesArray);
+            }
         }
+
 
         if (checkIn && checkOut) {
             query += " AND id NOT IN (SELECT hotel_id FROM reservations WHERE check_in < ? AND check_out > ?)";
@@ -85,7 +97,7 @@ export async function search(req, res) {
 
 export async function updateHotel(req, res) {
     const {id} = req.params;
-    const {name, location, rating, price, description, picture, amenities} = req.body;
+    const {name, location, rating, priceRange, description, picture, amenities} = req.body;
     /*const {error} = hotelSchema.validate(req.body);
     if (error) {
         return res.status(400).json({error: error.details[0].message});
@@ -107,9 +119,15 @@ export async function updateHotel(req, res) {
             updates.push("rating = ?");
             values.push(rating);
         }
-        if (price !== undefined) {
-            updates.push("price = ?");
-            values.push(price);
+        if (!priceRange) {
+            if (priceRange.min !== undefined) {
+                updates.push("price <= ?");
+                values.push(priceRange.min);
+            }
+            if (priceRange.max !== undefined) {
+                updates.push("price >= ?");
+                values.push(priceRange.max);
+            }
         }
         if (description !== undefined) {
             updates.push("description = ?");
