@@ -10,7 +10,7 @@ import {authentication} from "../middlewares/authentication.js";
 const reservationRouter = express.Router();
 
 reservationRouter.post("/create", authentication, createReservation);
-reservationRouter.get("/search", getReservations);
+reservationRouter.get("/:id", authentication, getReservations);
 reservationRouter.put("/:id", authentication, updateReservation);
 reservationRouter.delete("/:id", authentication, deleteReservation);
 

@@ -1,5 +1,5 @@
 import express from "express";
-import {createUser, deleteUser, login, search, updateUser} from "../controllers/userController.js";
+import {createUser, deleteUser, getUserInfo, login, search, updateUser} from "../controllers/userController.js";
 import {authentication} from "../middlewares/authentication.js";
 
 const userRouter = express.Router();
@@ -9,6 +9,8 @@ userRouter.post("/register", createUser)
 userRouter.post("/login", login);
 
 userRouter.get("/search", authentication, search);
+
+userRouter.get("/:id", authentication, getUserInfo);
 
 userRouter.put("/:id", authentication, updateUser);
 

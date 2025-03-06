@@ -1,22 +1,18 @@
-import reservationSchema from "../models/reservation.js";
 import {getDbConnection} from "../config/db.js";
 
 export async function createReservation(req, res) {
-    const {user, hotel, check_in_date, check_out_date, status} = req.body;
-    const {error} = reservationSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({error: error.details[0].message});
-    }
+    const {user_id, hotel_id, check_in_date, check_out_date, status, total_price, people} = req.body;
+
     try {
         const pool = await getDbConnection();
         const [result] = await pool.query(
-            "INSERT INTO reservations (user, hotel, check_in_date, check_out_date, status) VALUES (?, ?, ?, ?, ?)",
-            [user, hotel, check_in_date, check_out_date, status]
+            "INSERT INTO reservations (user_id, hotel_id, check_in_date, check_out_date, status, total_price, people) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [user_id, hotel_id, new Date(check_in_date).toISOString().split("T")[0], new Date(check_out_date).toISOString().split("T")[0], status, total_price, people]
         );
         const reservationId = result.insertId;
         res.status(201).json({
             message: "Réservation créée avec succès.",
-            reservation: {user, hotel, check_in_date, check_out_date, status},
+            reservation: {user_id, hotel_id, check_in_date, check_out_date, status, total_price, people},
             reservationId,
         });
         pool.close();
@@ -26,10 +22,12 @@ export async function createReservation(req, res) {
     }
 }
 
+
 export async function getReservations(req, res) {
+    const {id} = req.params;
     try {
         const pool = await getDbConnection();
-        const [result] = await pool.query("SELECT * FROM reservations");
+        const [result] = await pool.query("SELECT * FROM reservations WHERE user_id = ?", [id]);
         res.status(200).json(result);
         pool.close();
     } catch (err) {
@@ -40,23 +38,38 @@ export async function getReservations(req, res) {
 
 export async function updateReservation(req, res) {
     const {id} = req.params;
-    const {user, hotel, check_in_date, check_out_date, status} = req.body;
-    const {error} = reservationSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({error: error.details[0].message});
+    const {check_in_date, check_out_date, status} = req.body;
+
+    //Construction de la requete
+
+    const updateFields = [];
+    const updateValues = [];
+    if (check_in_date && check_out_date) {
+        if (new Date(check_in_date) > new Date(check_out_date)) {
+            return res.status(400).json({error: "La date d'arrivée ne peut pas être après la date de départ."});
+        }
+        updateFields.push("check_in_date = ?, check_out_date = ?");
+        updateValues.push(new Date(check_in_date).toISOString().split("T")[0]);
+        updateValues.push(new Date(check_out_date).toISOString().split("T")[0]);
+    }
+    if (status === "unconfirmed" || status === "confirmed" || status === "cancelled") {
+        updateFields.push("status = ?");
+        updateValues.push(status);
     }
     try {
         const pool = await getDbConnection();
         const [result] = await pool.query(
-            "UPDATE reservations SET user = ?, hotel = ?, check_in_date = ?, check_out_date = ?, status = ? WHERE id = ?",
-            [user, hotel, check_in_date, check_out_date, status, id]
+            `UPDATE reservations
+             SET ${updateFields.join(", ")}
+             WHERE id = ?`,
+            [...updateValues, id]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({error: "Réservation non trouvée."});
         }
         res.status(200).json({
             message: "Réservation mise à jour avec succès.",
-            reservation: {user, hotel, check_in_date, check_out_date, status},
+            reservation: {check_in_date, check_out_date, status},
         });
         pool.close();
     } catch (err) {
@@ -73,7 +86,7 @@ export async function deleteReservation(req, res) {
         if (result.affectedRows === 0) {
             return res.status(404).json({error: "Réservation non trouvée."});
         }
-        res.status(204).send();
+        res.status(204).send('Réservation supprimée avec succès.');
         pool.close();
     } catch (err) {
         console.error("Database error:", err);

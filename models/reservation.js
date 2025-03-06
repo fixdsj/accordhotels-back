@@ -28,12 +28,21 @@ const reservationSchema = Joi.object({
                 'any.invalid': `La date de départ ne doit pas être nulle.`
             }),
         status: Joi.string()
-            .valid('active', 'cancelled')
+            .valid('waiting', 'confirmed', 'cancelled')
             .required()
             .messages({
                 'string.empty': `Le statut ne doit pas être vide.`,
                 'any.only': `Le statut doit être 'active' ou 'cancelled'.`,
                 'any.required': `Le statut est requis.`
+            }),
+
+        total_price: Joi.number()
+            .min(1)
+            .required()
+            .messages({
+                'number.base': `Le prix total doit être un nombre.`,
+                'number.min': `Le prix total doit être supérieur ou égal à {#limit}.`,
+                'any.required': `Le prix total est requis.`
             }),
 
     }

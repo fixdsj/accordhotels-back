@@ -38,7 +38,7 @@ export async function createUser(req, res) {
         // Renvoyer le token et les informations de l'utilisateur
         res.status(201).json({
             message: "Utilisateur créé avec succès.",
-            user: {email, pseudo, role},
+            user: {id, email, pseudo, role},
             token,
         });
         pool.close();
@@ -68,7 +68,7 @@ export async function login(req, res) {
 
         // Renvoyer le token et les informations de l'utilisateur
         res.status(200).json({
-            user: {email: user.email, pseudo: user.pseudo, role: user.role},
+            user: {userId: user.id, email: user.email, pseudo: user.pseudo, role: user.role},
             token,
         });
         pool.close();
@@ -97,6 +97,24 @@ export async function search(req, res) {
         const pool = await getDbConnection();
         const [result] = await pool.query(query, params);
         res.status(200).json(result);
+        pool.close();
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({error: err});
+    }
+}
+
+export async function getUserInfo(req, res) {
+    const {id} = req.params;
+    try {
+        const pool = await getDbConnection();
+        const [result] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
+        if (result.length === 0) {
+            return res.status(404).json({error: "Utilisateur non trouvé."});
+        }
+        const user = result[0];
+
+        res.status(200).json(user);
         pool.close();
     } catch (err) {
         console.error("Database error:", err);
