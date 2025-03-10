@@ -15,6 +15,7 @@ jobs:
       DB_USER: root
       DB_PASSWORD: root
       DB_NAME: testdb
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     services:
       mysql:
@@ -29,12 +30,6 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
- 
-
-    strategy:
-      matrix:
-        node-version: [v20.11.0]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
