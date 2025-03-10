@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha --reporter mochawesome"
+    "test": "mocha --reporter mochawesome --exit"
   },
   "keywords": [],
   "author": "",
