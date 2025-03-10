@@ -148,6 +148,7 @@ export const userTests = () => {
             const pool = await getDbConnection();
             await pool.query('DELETE FROM users WHERE email = "test@example.com"');
             await pool.query('DELETE FROM users WHERE email = "updated@example.com"');
+            await pool.close();
         })
     });
 }

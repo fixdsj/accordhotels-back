@@ -75,13 +75,10 @@ describe('Reservation API', () => {
 
     it('should update a reservation', async () => {
         const pool = await getDbConnection();
-        console.log(userId, hotelId);
         const [reservation] = await pool.query(
             'SELECT * FROM reservations WHERE user_id = ? AND hotel_id = ?', [userId, hotelId]
         );
-        console.log(reservation);
         const reservationId = reservation[0].id;
-
         pool.close();
 
         const response = await request(app)
@@ -131,7 +128,7 @@ describe('Reservation API', () => {
         const pool = await getDbConnection();
         await pool.query('DELETE FROM reservations WHERE hotel_id IN (SELECT id FROM hotels WHERE name IN ("Test Hotel", "Updated Hotel"))');
         await pool.query('DELETE FROM hotels WHERE name IN ("Test Hotel", "Updated Hotel")');
-        pool.close();
+        await pool.close();
     })
 })
 }

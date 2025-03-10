@@ -156,7 +156,7 @@ describe('Hotels API', () => {
         await pool.query('DELETE FROM hotels WHERE name = "Test Hotel"');
         await pool.query('DELETE FROM hotels WHERE name = "Updated Hotel"');
         await pool.query('DELETE FROM users WHERE email = "test@example.com"');
-        pool.close();
+        await pool.close();
     });
 });
 }
