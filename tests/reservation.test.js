@@ -94,6 +94,7 @@ describe('Reservation API', () => {
                 if (res.body.message !== 'Réservation mise à jour avec succès.') {
                     throw new Error('Update reservation test failed');
                 }
+                console.log(res.body);
             });
     });
     it('should get reservations for a user', async () => {
