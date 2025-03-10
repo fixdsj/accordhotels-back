@@ -69,7 +69,14 @@ const hotelSchema = Joi.object({
                 'array.min': `Les équipements doivent avoir une longueur minimale de {#limit}.`,
                 'any.required': `Les équipements sont requis.`
             }),
-
+        capacity: Joi.number()
+            .min(1)
+            .required()
+            .messages({
+                'number.base': `La capacité doit être un nombre.`,
+                'number.min': `La capacité doit être supérieure ou égale à {#limit}.`,
+                'any.required': `La capacité est requise.`
+            }),
     }
 );
 export default hotelSchema;

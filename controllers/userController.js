@@ -10,7 +10,6 @@ export async function createUser(req, res) {
         return res.status(400).json({error: error.details[0].message});
     }
 
-    // Vérification si l'utilisateur existe déjà
     try {
         const pool = await getDbConnection();
         const [result] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
@@ -38,7 +37,7 @@ export async function createUser(req, res) {
         // Renvoyer le token et les informations de l'utilisateur
         res.status(201).json({
             message: "Utilisateur créé avec succès.",
-            user: {id, email, pseudo, role},
+            user: {id: userId, email, pseudo, role},
             token,
         });
         pool.close();
@@ -68,7 +67,7 @@ export async function login(req, res) {
 
         // Renvoyer le token et les informations de l'utilisateur
         res.status(200).json({
-            user: {userId: user.id, email: user.email, pseudo: user.pseudo, role: user.role},
+            user: {id: user.id, email: user.email, pseudo: user.pseudo, role: user.role},
             token,
         });
         pool.close();

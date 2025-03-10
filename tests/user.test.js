@@ -18,6 +18,7 @@ it('should create a new user', (done) => {
             password: 'password123',
             role: 'normal'
         })
+
         .expect(201)
         .expect(res => {
             if (res.body.message !== 'Utilisateur créé avec succès.') throw new Error('User creation failed');
@@ -75,7 +76,7 @@ it('should search users by pseudo', (done) => {
     request(app)
         .get('/api/users/search')
         .set('Authorization', `Bearer ${token}`) // Include the token
-        .query({ pseudo: 'testuser' })
+        .query({pseudo: 'testuser'})
         .expect(200)
         .expect(res => {
             if (res.body.length === 0) throw new Error('Search by pseudo failed');
@@ -87,7 +88,7 @@ it('should search users by email', (done) => {
     request(app)
         .get('/api/users/search')
         .set('Authorization', `Bearer ${token}`) // Include the token
-        .query({ email: 'test@example.com' })
+        .query({email: 'test@example.com'})
         .expect(200)
         .expect(res => {
             if (res.body.length === 0) throw new Error('Search by email failed');
@@ -100,7 +101,7 @@ it('should update a user', (done) => {
     request(app)
         .get('/api/users/search')
         .set('Authorization', `Bearer ${token}`) // Include the token
-        .query({ email: 'test@example.com' })
+        .query({email: 'test@example.com'})
         .end((err, res) => {
             if (err) return done(err);
             userId = res.body[0].id;
@@ -125,7 +126,7 @@ it('should delete a user', (done) => {
     request(app)
         .get('/api/users/search')
         .set('Authorization', `Bearer ${token}`) // Include the token
-        .query({ email: 'updated@example.com' })
+        .query({email: 'updated@example.com'})
         .end((err, res) => {
             if (err) return done(err);
             userId = res.body[0].id;

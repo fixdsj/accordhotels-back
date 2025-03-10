@@ -2,7 +2,7 @@ import hotelSchema from "../models/hotel.js";
 import {getDbConnection} from "../config/db.js";
 
 export async function createHotel(req, res) {
-    const {name, location, rating, price, description, picture, amenities} = req.body;
+    const {name, location, rating, price, description, picture, amenities, capacity} = req.body;
     const {error} = hotelSchema.validate(req.body);
     if (error) {
         console.log(error);
@@ -15,8 +15,8 @@ export async function createHotel(req, res) {
         const amenitiesString = Array.isArray(amenities) ? amenities.join(",") : "";
 
         const [result] = await pool.query(
-            "INSERT INTO hotels (name, location, rating, price, description, picture, amenities) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [name, location, rating, price, description, picture, amenitiesString]
+            "INSERT INTO hotels (name, location, rating, price, description, picture, amenities, capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [name, location, rating, price, description, picture, amenitiesString, capacity]
         );
 
         const hotelId = result.insertId;

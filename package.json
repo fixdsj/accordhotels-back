@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha"
+    "test": "mocha --recursive tests/**/*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
     "chai": "^5.2.0",
     "chai-http": "^5.1.1",
     "mocha": "^11.1.0",
+    "nyc": "^17.1.0",
     "supertest": "^7.0.0"
   }
 }
