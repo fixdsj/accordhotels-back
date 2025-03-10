@@ -25,7 +25,7 @@ CREATE TABLE reservations (
                               hotel_id INT,
                               check_in_date DATE NOT NULL,
                               check_out_date DATE NOT NULL,
-                              status ENUM('waiting', 'confirmed', 'cancelled)' NOT NULL,
+                              status ENUM('waiting', 'cancelled','confirmed') NOT NULL,
                               FOREIGN KEY (user_id) REFERENCES users(id),
                               FOREIGN KEY (hotel_id) REFERENCES hotels(id),
                               total_price INT NOT NULL,
