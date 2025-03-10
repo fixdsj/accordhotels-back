@@ -2,6 +2,7 @@ import request from 'supertest';
 import {app} from '../index.js';
 import {getDbConnection} from '../config/db.js';
 
+export const hotelTests = () => {
 describe('Hotels API', () => {
     let token;
     let userId;
@@ -158,3 +159,4 @@ describe('Hotels API', () => {
         pool.close();
     });
 });
+}
