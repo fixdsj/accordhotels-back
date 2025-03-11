@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+
+.github
+.idea
+.nyc_output
+
+.env

@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS akkor_hotel;
+USE akkor_hotel;
+
 CREATE TABLE users (
                        id INT AUTO_INCREMENT PRIMARY KEY,
                        email VARCHAR(255) NOT NULL UNIQUE,
@@ -25,10 +28,10 @@ CREATE TABLE reservations (
                               hotel_id INT,
                               check_in_date DATE NOT NULL,
                               check_out_date DATE NOT NULL,
-                              status ENUM('waiting', 'cancelled','confirmed') NOT NULL,
-                              FOREIGN KEY (user_id) REFERENCES users(id),
-                              FOREIGN KEY (hotel_id) REFERENCES hotels(id),
+                              status ENUM('waiting', 'cancelled', 'confirmed') NOT NULL,
                               total_price INT NOT NULL,
                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                              people INT NOT NULL
+                              people INT NOT NULL,
+                              FOREIGN KEY (user_id) REFERENCES users(id),
+                              FOREIGN KEY (hotel_id) REFERENCES hotels(id)
 );
