@@ -2,6 +2,9 @@ import {getDbConnection} from "../config/db.js";
 
 export async function createReservation(req, res) {
     const {user_id, hotel_id, check_in_date, check_out_date, status, total_price, people} = req.body;
+    if (!user_id || !hotel_id || !check_in_date || !check_out_date || !status || !total_price || !people) {
+        return res.status(400).json({error: "Veuillez remplir tous les champs."});
+    }
 
     try {
         const pool = await getDbConnection();
@@ -28,7 +31,13 @@ export async function getReservations(req, res) {
     try {
         const pool = await getDbConnection();
         const [result] = await pool.query("SELECT * FROM reservations WHERE user_id = ?", [id]);
-        res.status(200).json(result);
+
+        // Pour chaque réservation, récupérer les informations de l'hôtel
+        const hotels = await Promise.all(result.map(async (reservation) => {
+           const [hotel] = await pool.query("SELECT * FROM hotels WHERE id = ?", [reservation.hotel_id]);
+           return {...reservation, hotel: hotel[0]};
+           }));
+        res.status(200).json(hotels);
         pool.close();
     } catch (err) {
         console.error("Database error:", err);

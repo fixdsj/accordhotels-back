@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import {getDbConnection} from '../config/db.js';
+import { getDbConnection } from '../config/db.js';
 
 export async function authentication(req, res, next) {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
@@ -11,7 +11,6 @@ export async function authentication(req, res, next) {
     }
 
     try {
-        // Récupérer les secrets depuis le fichier .env
         const jwtSecret = process.env.JWT_SECRET;
 
         if (!jwtSecret) {
@@ -20,7 +19,6 @@ export async function authentication(req, res, next) {
             });
         }
 
-        // Vérification du jeton avec la clé secrète récupérée
         const decoded = jwt.verify(token, jwtSecret);
 
         if (!decoded || typeof decoded !== "object") {
@@ -30,11 +28,9 @@ export async function authentication(req, res, next) {
         }
 
         const userId = decoded.userId;
-
-        // Vérification de l'existence de l'utilisateur dans la base de données
         const pool = await getDbConnection();
         if (!pool) {
-            return res.status(500).json({error: "Erreur de connexion à la base de données."});
+            return res.status(500).json({ error: "Erreur de connexion à la base de données." });
         }
         const result = await pool.query("SELECT id FROM users WHERE id = ?", [userId]);
 
@@ -49,13 +45,7 @@ export async function authentication(req, res, next) {
         return next();
 
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({
-                error: "Le jeton a expiré. Veuillez vous reconnecter.",
-                redirect: "/login"
-            });
-        }
         console.error("Erreur de vérification du jeton:", error);
-        return res.status(500).json({error: "Erreur interne du serveur."});
+        return res.status(500).json({ error: "Erreur interne du serveur." });
     }
 }

@@ -164,6 +164,8 @@ export async function deleteUser(req, res) {
     const {id} = req.params;
     const pool = await getDbConnection();
     try {
+        // Suppression des reservations de l'utilisateur
+        await pool.query("DELETE FROM reservations WHERE user_id = ?", [id]);
         const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({error: "Utilisateur non trouvé."});
