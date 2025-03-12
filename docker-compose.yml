@@ -9,7 +9,7 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       DB_USER: user
-      DB_PASSWORD: rootpassword
+      DB_PASSWORD: userpassword
       DB_NAME: akkor_hotel
       JWT_SECRET: KzUhXPphTCkDeWeVIpAz8SSQFjmi2ImSOWrA7RDsuu95xOg4vRcvil7fPGYAiMZK
   db:
