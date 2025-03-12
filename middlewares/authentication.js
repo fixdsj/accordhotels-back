@@ -28,8 +28,8 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
             });
         }
 
-        console.log("decoded.user.id:",  decoded.user.id);
-        console.log("decoded.userId:", decoded.userId);
+        console.log("decoded.user.id:",  decoded);
+        const userId = decoded.userId;
         const pool = await getDbConnection();
         if (!pool) {
             return res.status(500).json({error: "Erreur de connexion à la base de données."});
