@@ -42,6 +42,8 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
         }
 
         const user = result[0];
+        console.log(result);
+        console.log("user:", user);
         console.log("role required:", requiredRole);
         console.log("user role:", user.role);
         if (requiredRole === 'administrator' && user.role !== 'administrator') {
