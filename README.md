@@ -25,11 +25,7 @@ Ce projet contient le backend de l'application Akkor Hotel, une plateforme de r�
     docker compose up --build -d
     ```
 
-3. Tests
-Pour effectuer les tests, executer cette commande **à l'intérieur** du container.
-    ```bash
-    npm test
-    ```
-## CI/CD (GitHub Actions)
-Des tests sont automatiquement effectués à chaque push sur la branche main. Pour voir les résultats des tests, allez dans l'onglet Actions de ce repository.
+
+## CI/CD (GitHub Actions) & Tests
+Les tests sont automatiquement effectués à chaque push sur la branche main. Pour voir les résultats des tests, allez dans l'onglet Actions de ce repository.
 
