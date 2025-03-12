@@ -2,12 +2,12 @@ import { getDbConnection } from "./config/db.js";
 import {fakerFR} from "@faker-js/faker";
 import { Faker, fr } from '@faker-js/faker';
 
-async function createSampleData() {
+async function createSampleData( number = 50) {
     const pool = await getDbConnection();
     const hotels = [];
     const customFaker = new Faker({ locale: fr });
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < number; i++) {
         const hotel = {
             name: customFaker.company.name(),
             location: customFaker.location.city() + ', ' + customFaker.location.country(),

@@ -48,7 +48,7 @@ jobs:
     - name: Create Database and Tables
       run: |
         mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS akkor_hotel;"
-        mysql -h 127.0.0.1 -uroot -proot testdb < schema.sql
+        mysql -h 127.0.0.1 -uroot -proot akkor_hotel < schema.sql
     - name: Check for security vulnerabilities
       run: npm audit
     - name: Run Tests
