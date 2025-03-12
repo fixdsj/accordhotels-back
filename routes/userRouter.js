@@ -106,7 +106,7 @@ userRouter.get("/search", authentication, search);
  *       404:
  *         description: Utilisateur non trouvé
  */
-userRouter.get("/:id", authentication, getUserInfo);
+userRouter.get("/:id",  (req, res, next) => authentication(req, res, next, 'employee'), getUserInfo);
 
 /**
  * @swagger

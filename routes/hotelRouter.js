@@ -47,7 +47,7 @@ const hotelRouter = express.Router();
  *       500:
  *         description: Erreur serveur
  */
-hotelRouter.post("/create", authentication, createHotel);
+hotelRouter.post("/create", (req, res, next) => authentication(req, res, next, 'employee'), createHotel);
 
 /**
  * @swagger
@@ -143,7 +143,7 @@ hotelRouter.get("/search", search);
  *       500:
  *         description: Erreur serveur
  */
-hotelRouter.put("/:id", authentication, updateHotel);
+hotelRouter.put("/:id",  (req, res, next) => authentication(req, res, next, 'employee'), updateHotel);
 
 /**
  * @swagger
@@ -169,6 +169,6 @@ hotelRouter.put("/:id", authentication, updateHotel);
  *       500:
  *         description: Erreur serveur
  */
-hotelRouter.delete("/:id", authentication, deleteHotel);
+hotelRouter.delete("/:id",  (req, res, next) => authentication(req, res, next, 'employee'), deleteHotel);
 
 export default hotelRouter;

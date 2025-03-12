@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { getDbConnection } from '../config/db.js';
+import {getDbConnection} from '../config/db.js';
 
-export async function authentication(req, res, next) {
+export async function authentication(req, res, next, requiredRole = 'normal') {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
     if (!token) {
@@ -21,6 +21,7 @@ export async function authentication(req, res, next) {
 
         const decoded = jwt.verify(token, jwtSecret);
 
+
         if (!decoded || typeof decoded !== "object") {
             return res.status(401).json({
                 error: "Le jeton n'est pas valide.",
@@ -30,7 +31,7 @@ export async function authentication(req, res, next) {
         const userId = decoded.userId;
         const pool = await getDbConnection();
         if (!pool) {
-            return res.status(500).json({ error: "Erreur de connexion à la base de données." });
+            return res.status(500).json({error: "Erreur de connexion à la base de données."});
         }
         const result = await pool.query("SELECT id FROM users WHERE id = ?", [userId]);
 
@@ -41,11 +42,22 @@ export async function authentication(req, res, next) {
         }
 
         const user = result[0];
+        if (requiredRole === 'administrator' && user.role !== 'administrator') {
+            return res.status(403).json({
+                error: "Vous n'êtes pas autorisé à effectuer cette action.",
+            });
+        } else if (requiredRole === 'employee') {
+            if (user.role !== 'employee' || user.role !== 'administrator') {
+                return res.status(403).json({
+                    error: "Vous n'êtes pas autorisé à effectuer cette action.",
+                });
+            }
+        }
         res.locals.user = user;
         return next();
 
     } catch (error) {
         console.error("Erreur de vérification du jeton:", error);
-        return res.status(500).json({ error: "Erreur interne du serveur." });
+        return res.status(500).json({error: "Erreur interne du serveur."});
     }
 }
