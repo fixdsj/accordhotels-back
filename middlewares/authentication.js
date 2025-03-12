@@ -42,12 +42,16 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
         }
 
         const user = result[0];
+        console.log("role required:", requiredRole);
+        console.log("user role:", user.role);
         if (requiredRole === 'administrator' && user.role !== 'administrator') {
+            console.log("le role requis est ", requiredRole, " et le role de l'utilisateur est ", user.role);
             return res.status(403).json({
                 error: "Vous n'êtes pas autorisé à effectuer cette action.",
             });
         } else if (requiredRole === 'employee') {
             if (user.role !== 'employee' || user.role !== 'administrator') {
+                console .log("le role requis est ", requiredRole, " et le role de l'utilisateur est ", user.role);
                 return res.status(403).json({
                     error: "Vous n'êtes pas autorisé à effectuer cette action.",
                 });
