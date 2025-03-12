@@ -14,7 +14,7 @@ jobs:
       DB_PORT: 3306
       DB_USER: root
       DB_PASSWORD: root
-      DB_NAME: testdb
+      DB_NAME: akkor_hotel
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     services:
@@ -24,7 +24,7 @@ jobs:
           - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: testdb
+          MYSQL_DATABASE: akkor_hotel
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
@@ -47,7 +47,7 @@ jobs:
         done
     - name: Create Database and Tables
       run: |
-        mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS testdb;"
+        mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS akkor_hotel;"
         mysql -h 127.0.0.1 -uroot -proot testdb < schema.sql
     - name: Check for security vulnerabilities
       run: npm audit
