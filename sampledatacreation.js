@@ -1,6 +1,6 @@
 import { getDbConnection } from "./config/db.js";
-import {fakerFR} from "@faker-js/faker";
 import { Faker, fr } from '@faker-js/faker';
+import bcrypt from "bcrypt";
 
 async function createSampleData( number = 50) {
     const pool = await getDbConnection();
@@ -44,6 +44,15 @@ async function createSampleData( number = 50) {
         hotel.capacity
     ]);
 
+    //Création d'un user admin
+    const user = {
+        email: "admin@example.com",
+        pseudo: "admin",
+        password: await bcrypt.hash("password123", 10),
+        role: "administrator"
+    };
+    const insertUserQuery = "INSERT INTO users (email, pseudo, password, role) VALUES (?, ?, ?, ?)";
+    await pool.query(insertUserQuery, [user.email, user.pseudo, user.password, user.role]);
     await pool.query(insertHotelsQuery, [values]);
     console.log("Sample data created successfully!");
 }
