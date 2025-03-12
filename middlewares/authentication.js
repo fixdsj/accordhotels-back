@@ -28,7 +28,7 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
             });
         }
 
-        console.log("decoded.user.id:",  decoded);
+        const currentRole = decoded.role;
         const userId = decoded.userId;
         const pool = await getDbConnection();
         if (!pool) {
@@ -43,18 +43,13 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
         }
 
         const user = result[0];
-        console.log(result);
-        console.log("user:", user);
-        console.log("role required:", requiredRole);
-        console.log("user role:", user.role);
-        if (requiredRole === 'administrator' && user.role !== 'administrator') {
-            console.log("le role requis est ", requiredRole, " et le role de l'utilisateur est ", user.role);
+
+        if (requiredRole === 'administrator' && currentRole !== 'administrator') {
             return res.status(403).json({
                 error: "Vous n'êtes pas autorisé à effectuer cette action.",
             });
         } else if (requiredRole === 'employee') {
-            if (user.role !== 'employee' || user.role !== 'administrator') {
-                console .log("le role requis est ", requiredRole, " et le role de l'utilisateur est ", user.role);
+            if (currentRole !== 'employee' || currentRole !== 'administrator') {
                 return res.status(403).json({
                     error: "Vous n'êtes pas autorisé à effectuer cette action.",
                 });
