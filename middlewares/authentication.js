@@ -28,12 +28,10 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
             });
         }
 
-        const currentRole = decoded.role;
+
         const userId = decoded.userId;
         const pool = await getDbConnection();
-        if (!pool) {
-            return res.status(500).json({error: "Erreur de connexion à la base de données."});
-        }
+
         const result = await pool.query("SELECT id FROM users WHERE id = ?", [userId]);
 
         if (!result || result.length === 0) {
@@ -41,7 +39,7 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
                 error: "Utilisateur non trouvé.",
             });
         }
-
+        const currentRole = decoded.role;
         const user = result[0];
 
         if (requiredRole === 'administrator' && currentRole !== 'administrator') {
@@ -49,7 +47,7 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
                 error: "Vous n'êtes pas autorisé à effectuer cette action.",
             });
         } else if (requiredRole === 'employee') {
-            if (currentRole !== 'employee' || currentRole !== 'administrator') {
+            if (currentRole !== 'employee' && currentRole !== 'administrator') {
                 return res.status(403).json({
                     error: "Vous n'êtes pas autorisé à effectuer cette action.",
                 });
