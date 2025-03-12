@@ -28,8 +28,7 @@ export async function authentication(req, res, next, requiredRole = 'normal') {
             });
         }
 
-        const userId = decoded.user.id;
-        console.log("decoded.user.id:", userId);
+        console.log("decoded.user.id:",  decoded.user.id);
         console.log("decoded.userId:", decoded.userId);
         const pool = await getDbConnection();
         if (!pool) {
