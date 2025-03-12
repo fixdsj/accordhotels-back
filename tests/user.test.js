@@ -19,7 +19,7 @@ export const userTests = () => {
                     email: 'test@example.com',
                     pseudo: 'testuser',
                     password: 'password123',
-                    role: 'normal'
+                    role: 'administrator'
                 })
 
                 .expect(201)

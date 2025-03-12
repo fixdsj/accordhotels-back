@@ -19,7 +19,7 @@ describe('Hotels API', () => {
             // Create the test user if it doesn't exist
             await pool.query(
                 'INSERT INTO users (email, pseudo, password, role) VALUES (?, ?, ?, ?)',
-                ['test@example.com', 'testuser', '$2b$10$PpgQc0/w8yqwWpEJHswL0eNu7qC1vJfv3Z8X/wOklR4Yz//njnY5S', 'normal']
+                ['test@example.com', 'testuser', '$2b$10$PpgQc0/w8yqwWpEJHswL0eNu7qC1vJfv3Z8X/wOklR4Yz//njnY5S', 'administrator']
             );
         }
         pool.close();
