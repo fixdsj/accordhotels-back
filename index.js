@@ -57,7 +57,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get("/", (req, res) => {
-    res.send("Bienvenue sur l'API de AccordsHotels !");
+    res.send("Bienvenue sur l'API de AccordsHotels!");
 });
 app.use("/api/users", userRouter);
 app.use("/api/hotels", hotelRouter);
